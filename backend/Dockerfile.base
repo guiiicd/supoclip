@@ -1,0 +1,25 @@
+# Base image with all system dependencies pre-installed.
+# Published to ghcr.io so the runtime Dockerfile does not need network
+# access for apt-get during Coolify builds.
+FROM python:3.11-slim-bookworm
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ffmpeg \
+    tesseract-ocr \
+    tesseract-ocr-eng \
+    curl \
+    unzip \
+    fonts-noto-core \
+    fonts-noto-cjk \
+    fonts-noto-color-emoji \
+    fontconfig \
+    && fc-cache -f \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install deno (required by yt-dlp for YouTube JS challenge solving)
+RUN curl -fsSL https://deno.land/install.sh | sh
+ENV DENO_DIR=/root/.deno
+ENV PATH="/root/.deno/bin:${PATH}"
+
+# Install uv package manager
+RUN pip install --no-cache-dir uv

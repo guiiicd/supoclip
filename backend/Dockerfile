@@ -1,35 +1,7 @@
-# Use Python 3.11 slim image
-FROM python:3.11-slim-bookworm
-
-# Install system dependencies including ffmpeg and unzip (for deno).
-# Noto provides fallback glyphs for multilingual captions (including Hindi)
-# and colour emoji. libass/fontconfig selects them when a chosen font lacks glyphs.
-# Retry with alternate mirrors in case of DNS/mirror issues.
-RUN set -eux; \
-    apt-get update -o Acquire::Retries=5 || \
-    (echo "deb http://deb.debian.org/debian bookworm main" > /etc/apt/sources.list && \
-     echo "deb http://deb.debian.org/debian-security bookworm-security main" >> /etc/apt/sources.list && \
-     apt-get update -o Acquire::Retries=5); \
-    apt-get install -y --no-install-recommends \
-    ffmpeg \
-    tesseract-ocr \
-    tesseract-ocr-eng \
-    curl \
-    unzip \
-    fonts-noto-core \
-    fonts-noto-cjk \
-    fonts-noto-color-emoji \
-    fontconfig \
-    && fc-cache -f \
-    && rm -rf /var/lib/apt/lists/*
-
-# Install deno (required by yt-dlp for YouTube JS challenge solving)
-RUN curl -fsSL https://deno.land/install.sh | sh
-ENV DENO_DIR=/root/.deno
-ENV PATH="/root/.deno/bin:${PATH}"
-
-# Install uv package manager
-RUN pip install uv
+# Use pre-built base image with system dependencies already installed.
+# This avoids apt-get calls during Coolify builds where the BuildKit
+# container may not have internet access.
+FROM ghcr.io/guiiicd/supoclip/backend-base:latest AS base
 
 # Set working directory
 WORKDIR /app
