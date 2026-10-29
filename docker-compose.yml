@@ -102,6 +102,7 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
+      network: host
       args:
         BACKEND_CPU_ONLY: ${BACKEND_CPU_ONLY:-false}
     container_name: supoclip-backend
@@ -289,6 +290,7 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
+      network: host
       args:
         BACKEND_CPU_ONLY: ${BACKEND_CPU_ONLY:-false}
     container_name: supoclip-worker
@@ -446,6 +448,7 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
+      network: host
       args:
         BACKEND_CPU_ONLY: ${BACKEND_CPU_ONLY:-false}
     container_name: supoclip-ai-worker
