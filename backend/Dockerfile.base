@@ -25,9 +25,8 @@ ENV PATH="/root/.deno/bin:${PATH}"
 RUN pip install --no-cache-dir uv
 
 # Pre-install Python dependencies (CPU wheels, most common for self-host)
-# Build context is the repository root, so paths are relative to backend/
 WORKDIR /app
-COPY backend/pyproject.toml backend/uv.lock* ./
+COPY pyproject.toml uv.lock* ./
 RUN uv venv .venv && uv sync --frozen --extra cpu
 
 ENV PYTHONPATH=/app
