@@ -4,7 +4,13 @@ FROM python:3.11-slim-bookworm
 # Install system dependencies including ffmpeg and unzip (for deno).
 # Noto provides fallback glyphs for multilingual captions (including Hindi)
 # and colour emoji. libass/fontconfig selects them when a chosen font lacks glyphs.
-RUN apt-get update && apt-get install -y \
+# Retry with alternate mirrors in case of DNS/mirror issues.
+RUN set -eux; \
+    apt-get update -o Acquire::Retries=5 || \
+    (echo "deb http://deb.debian.org/debian bookworm main" > /etc/apt/sources.list && \
+     echo "deb http://deb.debian.org/debian-security bookworm-security main" >> /etc/apt/sources.list && \
+     apt-get update -o Acquire::Retries=5); \
+    apt-get install -y --no-install-recommends \
     ffmpeg \
     tesseract-ocr \
     tesseract-ocr-eng \
