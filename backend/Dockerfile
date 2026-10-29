@@ -1,24 +1,11 @@
-# Use pre-built base image with system dependencies already installed.
-# This avoids apt-get calls during Coolify builds where the BuildKit
-# container may not have internet access.
+# Use pre-built base image with all dependencies already installed.
+# No network access needed during Coolify builds.
 FROM ghcr.io/guiiicd/supoclip/backend-base:latest AS base
 
 # Set working directory
 WORKDIR /app
 
-# Copy pyproject.toml and uv.lock for dependency installation
-COPY pyproject.toml uv.lock* ./
-
-# New self-hosted setups can select CPU wheels without changing legacy builds.
-ARG BACKEND_CPU_ONLY=false
-RUN uv venv .venv && \
-    if [ "$BACKEND_CPU_ONLY" = "true" ]; then \
-      uv sync --frozen --extra cpu; \
-    else \
-      uv sync --frozen --extra cuda; \
-    fi
-
-# yt-dlp and its PO-token plugin are installed from uv.lock above.
+# yt-dlp and its PO-token plugin are installed from uv.lock in the base image.
 
 # Copy source code
 COPY src/ ./src/

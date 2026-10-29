@@ -1,6 +1,6 @@
-# Base image with all system dependencies pre-installed.
+# Base image with system + Python dependencies pre-installed.
 # Published to ghcr.io so the runtime Dockerfile does not need network
-# access for apt-get during Coolify builds.
+# access during Coolify builds.
 FROM python:3.11-slim-bookworm
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -23,3 +23,10 @@ ENV PATH="/root/.deno/bin:${PATH}"
 
 # Install uv package manager
 RUN pip install --no-cache-dir uv
+
+# Pre-install Python dependencies (CPU wheels, most common for self-host)
+WORKDIR /app
+COPY pyproject.toml uv.lock* ./
+RUN uv venv .venv && uv sync --frozen --extra cpu
+
+ENV PYTHONPATH=/app
